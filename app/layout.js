@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import MuiThemeProvider from "./ThemeProvider"; // Import the custom theme provider
+import SessionWrapper from "./components/SessionWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,10 +12,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <MuiThemeProvider>{children}</MuiThemeProvider>
-      </body>
-    </html>
+    <SessionWrapper>
+      <html lang="en">
+        <body className={inter.className}>
+          <MuiThemeProvider>{children}</MuiThemeProvider>
+        </body>
+      </html>
+    </SessionWrapper>
   );
 }
