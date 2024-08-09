@@ -6,7 +6,7 @@ import GoogleLogIn from "./components/GoogleLogIn";
 export default function Home() {
   const [messages, setMessages] = useState([{
     role: 'assistant',
-    content: `Hi, I'm the headstarter support agent, how can I help you today?`
+    content: `Hi, I'm the Aether support agent, how can I help you today?`
   }])
 
   const [message, setMessage] = useState('')
