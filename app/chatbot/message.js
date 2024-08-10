@@ -36,7 +36,7 @@ const Message = ({ sender, text }) => {
                 sx={{
                     padding: '12px 25px',
                     borderRadius: '10px',
-                    backgroundColor: isAI ? '#e0e0e0' : '#007bff',
+                    backgroundColor: isAI ? '#e0e0e0' : 'darkblue',
                     color: isAI ? '#000' : '#fff',
                     maxWidth: '70%',
                 }}

@@ -26,8 +26,14 @@ export default function Home() {
           md: "flex",
         },
       }}>
-        <Typography variant="h1" fontWeight={"bold"} color={"white"} >
-          Welcome to Customer Support Bot
+        <Typography width={"100%"} textAlign={"center"} variant="h3" color={"white"} >
+          Welcome to <span style={{ fontSize: "150px", fontWeight: "bold" }}>Aether</span>’s Customer Support!
+        </Typography>
+        <Box height='40px'></Box>
+        <Typography width={"80%"} textAlign={"center"} variant="p" color={"white"}>
+          Your journey to a sustainable wardrobe starts here. Whether you need assistance with an order,
+          have questions about our products, or simply want to learn more about Aether’scommitment
+          to eco-friendly fashion, our AI is here to help.
         </Typography>
       </Box>
       {/* White Box */}

@@ -1,14 +1,39 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { AppBar, Avatar, Box, Button, IconButton, TextField, Toolbar, Typography, Select, MenuItem } from '@mui/material';
+import { AppBar, Avatar, Box, Button, IconButton, TextField, Toolbar, Typography, Select, MenuItem, Icon } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import Message from './message';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Image } from '@mui/icons-material';
+import FeedbackView from './components/FeedbackView';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
+import FeedbackButton from './components/FeedbackButton';
 
 const ChatbotLayout = () => {
+
+    const [reviews, setReviews] = useState([]);
+
+    // fetching reviews for the first time from DB
+    const updateReviews = async () => {
+        console.log('Fetching reviews...');
+        try {
+            const collectionRef = collection(db, 'reviews');
+            const querySnapshot = await getDocs(collectionRef);
+            const documents = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setReviews(documents);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        }
+    }
+
+    useEffect(() => {
+        updateReviews();
+    }, [])
 
     // handling session data in the app
     const { data: session, status } = useSession()
@@ -34,15 +59,14 @@ const ChatbotLayout = () => {
     const [input, setInput] = useState('');
     // setting language
     const [botLanguage, setBotLanguage] = useState('en');
-    const[toolbarMessage, setToolbarMessage] = useState(toolbarMessages['en'])
-    
+    const [toolbarMessage, setToolbarMessage] = useState(toolbarMessages['en'])
+
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push('/')  // Redirect to chatbot route after sign-in
         }
     }, [status])
-    
-    console.log(session);
+
 
     useEffect(() => {
         // Update the toolbar message and reset the chat
@@ -51,8 +75,8 @@ const ChatbotLayout = () => {
             { role: 'assistant', content: openingMessages[botLanguage] }
         ]);
     }, [botLanguage]);
-    
-    
+
+
     // handling user input and reading from the returned stream
     const handleSend = () => {
         if (input.trim()) {
@@ -109,27 +133,76 @@ const ChatbotLayout = () => {
         return (
             <>
                 {/* Header */}
-                <Box sx={{ minHeight: '5vh', display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '10px' }}>
-                    <Typography variant="h5">Welcome, <span style={{ fontWeight: 'bold' }}>{session?.user?.name}</span></Typography>
-                    <Button color='primary' variant='contained' onClick={() => signOut({ callbackUrl: '/' })}>
-                        <Avatar sx={{ width: 24, height: 24, marginRight: '10px' }} alt="Remy Sharp" src={session?.user?.image} />
+                <Box sx={{
+                    minHeight: '5vh',
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    padding: '10px',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: '20px',
+                }}>
+                    <Typography
+                        textAlign={'center'}
+                        variant="h5">
+                        Welcome, <span style={{ fontWeight: 'bold' }}>{session?.user?.name}</span>
+                    </Typography>
+                    <Button
+                        color='primary'
+                        variant='contained'
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        sx={{
+                            display: { xs: 'flex', md: 'none' },
+                        }}
+                    >
+                        <Avatar sx={{ width: 24, height: 24, marginRight: '10px' }} alt="Profile Avatar" src={session?.user?.image} />
                         <Typography >Sign Out</Typography>
                     </Button>
                 </Box>
                 {/* Body */}
-                <Box sx={{ height: '95vh', display: 'flex', justifyContent: 'end', alignItems: 'center' }}>
+                <Box sx={{ height: '95vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Box
+                        sx={{
+                            flex: 1,
+                            marginX: '20px',
+                            display: { xs: 'none', sm: 'none', md: 'flex' },
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            flexDirection: 'column',
+                            textAlign: 'center',
+                            height: '100%',
+                        }}>
+                        <Typography fontSize={'120px'} fontWeight={'bold'}>Aether</Typography>
+                        <Typography variant='h6' width={'50%'}>
+                            Got any questions or need help? Our AI customer support is here to help.
+                        </Typography>
+
+                        <FeedbackButton setReviews={setReviews} />
+                        <FeedbackView reviews={reviews} />
+                        <Button
+                            sx={{
+                                marginTop: '100px',
+                            }}
+                            color='primary'
+                            variant='contained'
+                            onClick={() => signOut({ callbackUrl: '/' })}
+                        >
+                            <Avatar sx={{ width: 24, height: 24, marginRight: '10px' }} alt="Profile Avatar" src={session?.user?.image} />
+                            <Typography >Sign Out</Typography>
+                        </Button>
+                    </Box>
                     {/* Chatbot */}
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
                             height: 'calc(100vh - 100px)',
-                            width: '500px',
                             border: '1px solid #ddd',
                             borderRadius: '16px',
                             boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
                             backgroundColor: '#fff',
                             marginX: '20px',
+                            flex: 1,
                             // position: 'fixed',
                             // right: '80px',
                             // top: '10px',
@@ -143,13 +216,11 @@ const ChatbotLayout = () => {
                                 borderTopRightRadius: '16px',
                             }}
                         >
-                            <Toolbar 
+                            <Toolbar
                                 display="flex"
-                                flexDirection= "row"
-                                justifyContent= "space-between"
-                                sx={{ 
-                                    display: 'flex', 
-                                    flexDirection: 'row', 
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
                                     justifyContent: 'space-between',
                                     borderTopLeftRadius: '16px',
                                     borderTopRightRadius: '16px',
@@ -159,10 +230,25 @@ const ChatbotLayout = () => {
                                     {toolbarMessage}
                                 </Typography>
                                 <Select
+                                    size='small'
                                     value={botLanguage}
                                     onChange={(e) => setBotLanguage(e.target.value)}
                                     variant="outlined"
-                                    style={{ color: 'white', borderColor: 'white' }}
+                                    sx={{
+                                        color: 'white',
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'white',
+                                        },
+                                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'white',
+                                        },
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'white',
+                                        },
+                                        '& .MuiSelect-icon': {
+                                            color: 'white',
+                                        },
+                                    }}
                                     MenuProps={{
                                         PaperProps: {
                                             style: {
@@ -178,7 +264,7 @@ const ChatbotLayout = () => {
                                     <MenuItem value="de">German</MenuItem>
                                     <MenuItem value="zh">Chinese</MenuItem>
                                 </Select>
-                         </Toolbar>
+                            </Toolbar>
                         </AppBar>
                         <Box
                             sx={{
