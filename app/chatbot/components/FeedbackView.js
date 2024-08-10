@@ -71,8 +71,8 @@ const FeedbackView = ({ reviews }) => {
                                 justifyContent={'space-between'}
                             >
                                 <Typography
-                                    width={'40%'}
-                                    textAlign={'left'}
+                                    width={'78%'}
+                                    textAlign={'justify'}
                                 >
                                     {feedback.text}
                                 </Typography>
