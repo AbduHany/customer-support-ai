@@ -7,7 +7,7 @@ module.exports = {
     production: {
       key: 'key01.pem',
       user: 'ubuntu',
-      host: '3.84.134.65',
+      host: '3.87.2.17',
       ref: 'origin/main',
       repo: 'git@github.com:AbduHany/customer-support-ai.git',
       path: '/home/ubuntu',
